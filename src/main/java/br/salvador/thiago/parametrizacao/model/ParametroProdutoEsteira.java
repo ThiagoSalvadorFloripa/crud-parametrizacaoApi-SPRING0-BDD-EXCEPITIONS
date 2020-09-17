@@ -1,7 +1,6 @@
 package br.salvador.thiago.parametrizacao.model;
 
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,20 +26,16 @@ public class ParametroProdutoEsteira {
     private Integer codigoMobilidade;
 
     @NotNull
-    @Length(min = 1, max = 1)
-    private String indicadorHabilitado;
+    private char indicadorHabilitado;
 
     @NotNull
-    @Length(min = 1, max = 1)
-    private String indicadorValidaRegraNegocio;
+    private char indicadorValidaRegraNegocio;
 
     @NotNull
-    @Length(min = 1, max = 1)
-    private String indicadorLastoLCA;
+    private char indicadorLastoLCA;
 
     @NotNull
-    @Length(min = 1, max = 1)
-    private String indicadorPlanoPagamentoPersonalizado;
+    private char indicadorPlanoPagamentoPersonalizado;
 
     @NotNull
     private Integer quantidadeMaximaParcela;

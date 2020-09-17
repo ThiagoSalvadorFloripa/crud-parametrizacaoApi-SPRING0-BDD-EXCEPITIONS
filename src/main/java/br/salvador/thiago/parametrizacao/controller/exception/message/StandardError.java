@@ -1,15 +1,13 @@
 package br.salvador.thiago.parametrizacao.controller.exception.message;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
+@ToString
 public class StandardError {
 
     private HttpStatus httpStatus;

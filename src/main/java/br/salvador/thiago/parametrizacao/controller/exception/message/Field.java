@@ -1,12 +1,10 @@
 package br.salvador.thiago.parametrizacao.controller.exception.message;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
+@ToString
 public class Field {
 
     private String fieldName;

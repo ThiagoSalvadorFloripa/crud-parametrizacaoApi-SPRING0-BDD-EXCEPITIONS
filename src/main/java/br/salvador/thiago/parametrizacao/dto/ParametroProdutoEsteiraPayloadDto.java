@@ -1,39 +1,32 @@
 package br.salvador.thiago.parametrizacao.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
-public class ParametroProdutoEsteiraPostDto {
+@ToString
+public class ParametroProdutoEsteiraPayloadDto {
 
-    @NotNull
+
     private Integer codigoProdutoOperacional;
 
     @NotNull
     private Integer codigoMobilidade;
 
     @NotNull
-    @Length(min = 1, max = 1)
-    private String indicadorHabilitado;
+    private char indicadorHabilitado;
 
     @NotNull
-    @Length(min = 1, max = 1)
-    private String indicadorValidaRegraNegocio;
+    private char indicadorValidaRegraNegocio;
 
     @NotNull
-    @Length(min = 1, max = 1)
-    private String indicadorLastoLCA;
+    private char indicadorLastoLCA;
 
     @NotNull
-    @Length(min = 1, max = 1)
-    private String indicadorPlanoPagamentoPersonalizado;
+    private char indicadorPlanoPagamentoPersonalizado;
 
     @NotNull
     private Integer quantidadeMaximaParcela;

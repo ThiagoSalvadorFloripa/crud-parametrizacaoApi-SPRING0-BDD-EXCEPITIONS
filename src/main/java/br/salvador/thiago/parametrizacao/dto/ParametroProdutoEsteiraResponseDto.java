@@ -1,15 +1,12 @@
 package br.salvador.thiago.parametrizacao.dto;
 
-import br.salvador.thiago.parametrizacao.model.ParametroProdutoEsteira;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
+@ToString
 public class ParametroProdutoEsteiraResponseDto {
 
     private Integer idParametroRegraEsteira;
@@ -18,13 +15,13 @@ public class ParametroProdutoEsteiraResponseDto {
 
     private Integer codigoMobilidade;
 
-    private String indicadorHabilitado;
+    private char indicadorHabilitado;
 
-    private String indicadorValidaRegraNegocio;
+    private char indicadorValidaRegraNegocio;
 
-    private String indicadorLastoLCA;
+    private char indicadorLastoLCA;
 
-    private String indicadorPlanoPagamentoPersonalizado;
+    private char indicadorPlanoPagamentoPersonalizado;
 
     private Integer quantidadeMaximaParcela;
 
@@ -41,22 +38,4 @@ public class ParametroProdutoEsteiraResponseDto {
     private LocalDateTime dataCriacao;
 
     private LocalDateTime dataAtualizacao;
-
-    public ParametroProdutoEsteiraResponseDto(ParametroProdutoEsteira parametroProdutoEsteira) {
-        this.idParametroRegraEsteira = parametroProdutoEsteira.getIdParametroRegraEsteira();
-        this.codigoProdutoOperacional = parametroProdutoEsteira.getCodigoProdutoOperacional();
-        this.codigoMobilidade = parametroProdutoEsteira.getCodigoMobilidade();
-        this.indicadorHabilitado = parametroProdutoEsteira.getIndicadorHabilitado();
-        this.indicadorValidaRegraNegocio = parametroProdutoEsteira.getIndicadorValidaRegraNegocio();
-        this.indicadorLastoLCA = parametroProdutoEsteira.getIndicadorLastoLCA();
-        this.indicadorPlanoPagamentoPersonalizado = parametroProdutoEsteira.getIndicadorPlanoPagamentoPersonalizado();
-        this.quantidadeMaximaParcela = parametroProdutoEsteira.getQuantidadeMaximaParcela();
-        this.quantidadePrazoValidade = parametroProdutoEsteira.getQuantidadePrazoValidade();
-        this.dataInicioVigencia = parametroProdutoEsteira.getDataInicioVigencia();
-        this.dataFimVigencia = parametroProdutoEsteira.getDataFimVigencia();
-        this.codigoUsuarioInclusao = parametroProdutoEsteira.getCodigoUsuarioInclusao();
-        this.codigoUsuarioAlteracao = parametroProdutoEsteira.getCodigoUsuarioAlteracao();
-        this.dataCriacao = parametroProdutoEsteira.getDataCriacao();
-        this.dataAtualizacao = parametroProdutoEsteira.getDataAtualizacao();
-    }
 }

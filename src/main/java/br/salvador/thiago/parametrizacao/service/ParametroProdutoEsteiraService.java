@@ -1,13 +1,26 @@
 package br.salvador.thiago.parametrizacao.service;
 
-import br.salvador.thiago.parametrizacao.dto.ParametroProdutoEsteiraPostDto;
+import br.salvador.thiago.parametrizacao.controller.ParametroProdutoEsteiraController;
+import br.salvador.thiago.parametrizacao.controller.exception.ObjectNotFoundException;
+import br.salvador.thiago.parametrizacao.dto.ParametroProdutoEsteiraPayloadDto;
 import br.salvador.thiago.parametrizacao.dto.ParametroProdutoEsteiraResponseDto;
+import br.salvador.thiago.parametrizacao.dto.mapper.ParametroProdutoEsteiraPayloadMapper;
+import br.salvador.thiago.parametrizacao.dto.mapper.ParametroProdutoEsteiraResponseMapper;
 import br.salvador.thiago.parametrizacao.model.ParametroProdutoEsteira;
 import br.salvador.thiago.parametrizacao.repository.ParametroProdutoEsteiraRepository;
+import br.salvador.thiago.parametrizacao.validation.ObjectValidation;
+import br.salvador.thiago.parametrizacao.validation.ParametroProdutoEsteiraPayloadValidation;
+import br.salvador.thiago.parametrizacao.validation.rules.IsNullOrExceptRule;
+import br.salvador.thiago.parametrizacao.validation.rules.Rule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ParametroProdutoEsteiraService {
@@ -15,57 +28,66 @@ public class ParametroProdutoEsteiraService {
     @Autowired
     private ParametroProdutoEsteiraRepository parametroProdutoEsteiraRepository;
 
-    public ParametroProdutoEsteiraResponseDto save(ParametroProdutoEsteiraPostDto objectDto) {
-        validateIndicadoresByRegex(objectDto, "S|N");
+    @Autowired
+    private ParametroProdutoEsteiraPayloadMapper parametroProdutoEsteiraPayloadMapper;
 
-        ParametroProdutoEsteira objectToSave = this.fromDto(objectDto);
+    @Autowired
+    private ParametroProdutoEsteiraResponseMapper parametroProdutoEsteiraResponseMapper;
+
+    private Logger logger = LoggerFactory.getLogger(ParametroProdutoEsteiraController.class);
+
+    public ParametroProdutoEsteiraResponseDto save(ParametroProdutoEsteiraPayloadDto objectDto) {
+        this.logger.info("Iniciando validação de dados para salvar ParametroProdutoEsteira " +
+                objectDto.toString());
+
+        ObjectValidation validation = new ParametroProdutoEsteiraPayloadValidation(objectDto);
+        validation.execute();
+
+        this.logger.info("Validação de dados para salvar ParametroProdutoEsteira concluída" +
+                objectDto.toString());
+
+        ParametroProdutoEsteira objectToSave = this.parametroProdutoEsteiraPayloadMapper
+                .toParametroProdutoEsteira(objectDto);
+
         objectToSave.setIdParametroRegraEsteira(null);
         objectToSave.setDataCriacao(LocalDateTime.now());
 
-        return new ParametroProdutoEsteiraResponseDto(
-                this.parametroProdutoEsteiraRepository.save(objectToSave)
-        );
+        ParametroProdutoEsteira responseEntity = this.parametroProdutoEsteiraRepository
+                .save(objectToSave);
+
+        ParametroProdutoEsteiraResponseDto responseDto = this.parametroProdutoEsteiraResponseMapper
+                .toParametroProdutoEsteiraResponseDto(responseEntity);
+
+        return responseDto;
     }
 
-    private void validateIndicadoresByRegex(ParametroProdutoEsteiraPostDto objectDto, String regex) {
-        if(regex == null)
-            throw new NullPointerException("Parâmetro regex da função de validação de " +
-                    "indicadores precisa conter um expressão");
+    public ParametroProdutoEsteiraResponseDto findById(Integer idParametroRegraEsteira) {
+        this.logger.info("Iniciando validação de dados para encontrar ParametroProdutoEsteira de id " +
+                idParametroRegraEsteira);
 
-        if(!objectDto.getIndicadorLastoLCA().matches(regex)) {
-            throw new IllegalArgumentException("Parâmetro 'indicadorLastoLCA' precisa ser " + regex);
-        }
+        Rule isNull = new IsNullOrExceptRule(idParametroRegraEsteira);
+        isNull.doLogic("iidParametroRegraEsteira");
 
-        if(!objectDto.getIndicadorHabilitado().matches(regex)) {
-            throw new IllegalArgumentException("Parâmetro 'indicadorHabilitado' precisa ser " + regex);
-        }
+        this.logger.info("Validação de dados para encontrar ParametroProdutoEsteira de id " +
+                idParametroRegraEsteira + " concluída");
 
-        if(!objectDto.getIndicadorPlanoPagamentoPersonalizado().matches(regex)) {
-            throw new IllegalArgumentException("Parâmetro 'indicadorPlanoPagamentoPersonalizado' precisa ser " + regex);
-        }
+        ParametroProdutoEsteira responseEntity = this.parametroProdutoEsteiraRepository
+                .findById(idParametroRegraEsteira)
+                .orElseThrow(() -> new ObjectNotFoundException(idParametroRegraEsteira, "Parametro de Produto Esteira"));
 
-        if(!objectDto.getIndicadorValidaRegraNegocio().matches(regex)) {
-            throw new IllegalArgumentException("Parâmetro 'getIndicadorValidaRegraNegocio' precisa ser " + regex);
-        }
+        ParametroProdutoEsteiraResponseDto responseDto = this.parametroProdutoEsteiraResponseMapper
+                .toParametroProdutoEsteiraResponseDto(responseEntity);
+
+         return responseDto;
     }
 
-    public ParametroProdutoEsteira fromDto(ParametroProdutoEsteiraPostDto objectDto) {
-        return new ParametroProdutoEsteira(
-                null,
-                objectDto.getCodigoProdutoOperacional(),
-                objectDto.getCodigoMobilidade(),
-                objectDto.getIndicadorHabilitado(),
-                objectDto.getIndicadorValidaRegraNegocio(),
-                objectDto.getIndicadorLastoLCA(),
-                objectDto.getIndicadorPlanoPagamentoPersonalizado(),
-                objectDto.getQuantidadeMaximaParcela(),
-                objectDto.getQuantidadePrazoValidade(),
-                objectDto.getDataInicioVigencia(),
-                objectDto.getDataFimVigencia(),
-                objectDto.getCodigoUsuarioInclusao(),
-                objectDto.getCodigoUsuarioAlteracao(),
-                null,
-                null
-        );
+    public List<ParametroProdutoEsteiraResponseDto> findAll() {
+        List<ParametroProdutoEsteira> responseEntityList =
+                this.parametroProdutoEsteiraRepository.findAll();
+        List<ParametroProdutoEsteiraResponseDto> responseDtoList =
+                this.parametroProdutoEsteiraResponseMapper
+                        .toParametroProdutoEsteiraResponseDtos(responseEntityList);
+
+        return responseDtoList;
     }
 }
