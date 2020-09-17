@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class ParametroProdutoEsteiraPayloadDto {
 
 
+    @NotNull
     private Integer codigoProdutoOperacional;
 
     @NotNull
