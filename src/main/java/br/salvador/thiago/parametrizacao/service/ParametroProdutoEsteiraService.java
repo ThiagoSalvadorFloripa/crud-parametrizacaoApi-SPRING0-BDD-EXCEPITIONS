@@ -1,6 +1,5 @@
 package br.salvador.thiago.parametrizacao.service;
 
-import br.salvador.thiago.parametrizacao.controller.ParametroProdutoEsteiraController;
 import br.salvador.thiago.parametrizacao.controller.exception.ObjectNotFoundException;
 import br.salvador.thiago.parametrizacao.dto.ParametroProdutoEsteiraPayloadDto;
 import br.salvador.thiago.parametrizacao.dto.ParametroProdutoEsteiraResponseDto;
@@ -16,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,32 +31,22 @@ public class ParametroProdutoEsteiraService {
     @Autowired
     private ParametroProdutoEsteiraResponseMapper parametroProdutoEsteiraResponseMapper;
 
-    private Logger logger = LoggerFactory.getLogger(ParametroProdutoEsteiraController.class);
+    private Logger logger = LoggerFactory.getLogger(ParametroProdutoEsteiraService.class);
 
     public ParametroProdutoEsteiraResponseDto save(ParametroProdutoEsteiraPayloadDto objectDto) {
-        this.logger.info("Iniciando validação de dados para salvar ParametroProdutoEsteira " +
-                objectDto.toString());
+        this.logger.info("Iniciando validação de dados para salvar ParametroProdutoEsteira {}", objectDto);
 
-        ObjectValidation validation = new ParametroProdutoEsteiraPayloadValidation(objectDto);
-        validation.execute();
+        validaObjetoParametroProdutoEsteiraPayloadDto(objectDto);
 
-        this.logger.info("Validação de dados para salvar ParametroProdutoEsteira concluída" +
-                objectDto.toString());
+        this.logger.info("Validação de dados para salvar ParametroProdutoEsteira concluída {}", objectDto);
 
-        ParametroProdutoEsteira objectToSave = this.parametroProdutoEsteiraPayloadMapper
-                .toParametroProdutoEsteira(objectDto);
+        this.preparaParametroProdutoEsteiraParaSalvar(objectDto);
 
-        objectToSave.setIdParametroRegraEsteira(null);
-        objectToSave.setDataCriacao(LocalDateTime.now());
-
-        ParametroProdutoEsteira responseEntity = this.parametroProdutoEsteiraRepository
-                .save(objectToSave);
-
-        ParametroProdutoEsteiraResponseDto responseDto = this.parametroProdutoEsteiraResponseMapper
-                .toParametroProdutoEsteiraResponseDto(responseEntity);
-
-        return responseDto;
+        return this.parametroProdutoEsteiraResponseMapper
+                .toParametroProdutoEsteiraResponseDto(this.parametroProdutoEsteiraRepository
+                        .save(preparaParametroProdutoEsteiraParaSalvar(objectDto)));
     }
+
 
     public ParametroProdutoEsteiraResponseDto findById(Integer idParametroRegraEsteira) {
         this.logger.info("Iniciando validação de dados para encontrar ParametroProdutoEsteira de id " +
@@ -89,5 +76,20 @@ public class ParametroProdutoEsteiraService {
                         .toParametroProdutoEsteiraResponseDtos(responseEntityList);
 
         return responseDtoList;
+    }
+
+    private void validaObjetoParametroProdutoEsteiraPayloadDto(ParametroProdutoEsteiraPayloadDto objectDto) {
+        ObjectValidation validation = new ParametroProdutoEsteiraPayloadValidation(objectDto);
+        validation.execute();
+    }
+
+    private ParametroProdutoEsteira preparaParametroProdutoEsteiraParaSalvar(ParametroProdutoEsteiraPayloadDto objectDto){
+        ParametroProdutoEsteira objectToSave = this.parametroProdutoEsteiraPayloadMapper
+                .toParametroProdutoEsteira(objectDto);
+
+        objectToSave.setIdParametroRegraEsteira(null);
+        objectToSave.setDataCriacao(LocalDateTime.now());
+
+        return objectToSave;
     }
 }
