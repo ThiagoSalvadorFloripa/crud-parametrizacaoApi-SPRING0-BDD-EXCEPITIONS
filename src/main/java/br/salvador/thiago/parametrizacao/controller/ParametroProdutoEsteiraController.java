@@ -37,6 +37,22 @@ public class ParametroProdutoEsteiraController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @RequestMapping(value = "/{idParametroRegraEsteira}", method = RequestMethod.PUT)
+    public ResponseEntity<ParametroProdutoEsteiraResponseDto> update(
+            @PathVariable Integer idParametroRegraEsteira,
+            @Valid @RequestBody ParametroProdutoEsteiraPayloadDto parametroProdutoEsteiraPayloadDto) {
+        this.logger.info("Request para atualizar o parametro de produto na esteira de id " + idParametroRegraEsteira +
+                ". " + parametroProdutoEsteiraPayloadDto.toString());
+
+        ParametroProdutoEsteiraResponseDto response =
+                this.parametroProdutoEsteiraService.update(idParametroRegraEsteira, parametroProdutoEsteiraPayloadDto);
+
+        this.logger.info("Serviço atualizou o parametro de produto na esteirade id " + idParametroRegraEsteira +
+                response.toString());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @RequestMapping(value = "/{idParametroRegraEsteira}", method = RequestMethod.GET)
     public ResponseEntity<ParametroProdutoEsteiraResponseDto> findById(
             @PathVariable Integer idParametroRegraEsteira) {

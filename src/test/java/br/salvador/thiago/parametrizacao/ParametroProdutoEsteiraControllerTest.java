@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -51,7 +52,7 @@ public class ParametroProdutoEsteiraControllerTest {
     }
 
     @Test
-    public void whenPostParametroProdutoEsteiraPayloadDtoValid_thenReturnCreatedWithNewObject() {
+    public void whenPostValidData_thenReturnCreatedWithNewObject() {
         Mockito.when(this.parametroProdutoEsteiraRepository.save(any(ParametroProdutoEsteira.class)))
                 .thenReturn(new ParametroProdutoEsteira());
 
@@ -76,14 +77,15 @@ public class ParametroProdutoEsteiraControllerTest {
                 .exchange("http://localhost:" + this.port + "/v1/parametro-regra-esteira",
                         HttpMethod.POST,
                         requestBody,
-                        ParametroProdutoEsteiraResponseDto.class);
+                        ParametroProdutoEsteiraResponseDto.class
+                );
 
-        Assertions.assertThat(response.getStatusCodeValue())
-                .isEqualTo(201L);
+        Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(201L);
+        Assertions.assertThat(response.getBody()).isNotNull();
     }
 
     @Test
-    public void whenPostInvalidParametroProdutoEsteiraPayloadDtoWithNull_thenBadRequest() {
+    public void whenPostInvalidDataWithNullProperties_thenBadRequest() {
         ParametroProdutoEsteiraPayloadDto toSave = new ParametroProdutoEsteiraPayloadDto();
 
         HttpEntity<ParametroProdutoEsteiraPayloadDto> requestBody = new HttpEntity<>(toSave);
@@ -94,15 +96,13 @@ public class ParametroProdutoEsteiraControllerTest {
                         StandardError.class
                 );
 
-        Assertions.assertThat(response.getStatusCode())
-                .isEqualByComparingTo(HttpStatus.BAD_REQUEST);
-
+        Assertions.assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
         Assertions.assertThat(Objects.requireNonNull(response.getBody()).getException())
                 .isEqualTo("MethodArgumentNotValidException");
     }
 
     @Test
-    public void whenPostParametroProdutoEsteiraPayloadDtoWithInvalidIndicadorRangeValue_thenIllegalArgumentException() {
+    public void whenPostInvalidDataWithIndicadorOutOfValueRange_thenIllegalArgumentException() {
         ParametroProdutoEsteiraPayloadDto toSave = new ParametroProdutoEsteiraPayloadDto(
                 33,
                 3,
@@ -126,15 +126,16 @@ public class ParametroProdutoEsteiraControllerTest {
                         StandardError.class
                 );
 
-        Assertions.assertThat(response.getStatusCode())
-                .isEqualByComparingTo(HttpStatus.BAD_REQUEST);
-
+        Assertions.assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
         Assertions.assertThat(Objects.requireNonNull(response.getBody()).getException())
                 .isEqualTo("IllegalArgumentException");
     }
 
     @Test
-    public void whenFindByIdAndObjectNotExists_thenObjectNotFoundException() {
+    public void whenGetAndObjectNotExists_thenObjectNotFoundException() {
+        Mockito.when(this.parametroProdutoEsteiraRepository.findById(1))
+                .thenReturn(Optional.empty());
+
         ResponseEntity<StandardError> response = this.restTemplate
                 .exchange("http://localhost:" + this.port + "/v1/parametro-regra-esteira/1",
                         HttpMethod.GET,
@@ -143,10 +144,75 @@ public class ParametroProdutoEsteiraControllerTest {
                         1
                 );
 
-        Assertions.assertThat(response.getStatusCode())
-                .isEqualByComparingTo(HttpStatus.BAD_REQUEST);
-
+        Assertions.assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
         Assertions.assertThat(Objects.requireNonNull(response.getBody()).getException())
                 .isEqualTo("ObjectNotFoundException");
+    }
+
+    @Test
+    public void whenPutAndObjectNotExists_thenObjectNotFoundException() {
+        Mockito.when(this.parametroProdutoEsteiraRepository.findById(1))
+                .thenReturn(Optional.empty());
+
+        ParametroProdutoEsteiraPayloadDto toUpdate = new ParametroProdutoEsteiraPayloadDto(
+                33,
+                3,
+                'S',
+                'S',
+                'N',
+                'N',
+                20,
+                30,
+                LocalDateTime.parse("2020-09-10T16:22:01.8394834"),
+                LocalDateTime.parse("2020-09-10T16:22:01.8394834"),
+                2,
+                3
+        );
+
+        HttpEntity<ParametroProdutoEsteiraPayloadDto> requestBody = new HttpEntity<>(toUpdate);
+        ResponseEntity<StandardError> response = this.restTemplate
+                .exchange("http://localhost:" + this.port + "/v1/parametro-regra-esteira/1",
+                        HttpMethod.PUT,
+                        requestBody,
+                        StandardError.class
+                );
+
+        Assertions.assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
+        Assertions.assertThat(Objects.requireNonNull(response.getBody()).getException())
+                .isEqualTo("ObjectNotFoundException");
+    }
+
+    @Test
+    public void whenPutValidData_thenReturnUpdatedObject() {
+        Mockito.when(this.parametroProdutoEsteiraRepository.save(any(ParametroProdutoEsteira.class)))
+                .thenReturn(new ParametroProdutoEsteira());
+        Mockito.when(this.parametroProdutoEsteiraRepository.findById(1))
+                .thenReturn(Optional.of(new ParametroProdutoEsteira()));
+
+        ParametroProdutoEsteiraPayloadDto toUpdate = new ParametroProdutoEsteiraPayloadDto(
+                33,
+                3,
+                'S',
+                'S',
+                'N',
+                'N',
+                20,
+                30,
+                LocalDateTime.parse("2020-09-10T16:22:01.8394834"),
+                LocalDateTime.parse("2020-09-10T16:22:01.8394834"),
+                2,
+                3
+        );
+
+        HttpEntity<ParametroProdutoEsteiraPayloadDto> requestBody = new HttpEntity<>(toUpdate);
+        ResponseEntity<StandardError> response = this.restTemplate
+                .exchange("http://localhost:" + this.port + "/v1/parametro-regra-esteira/1",
+                        HttpMethod.PUT,
+                        requestBody,
+                        StandardError.class
+                );
+
+        Assertions.assertThat(response.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotNull();
     }
 }
