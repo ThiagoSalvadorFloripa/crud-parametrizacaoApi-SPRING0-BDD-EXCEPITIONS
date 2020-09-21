@@ -1,39 +1,54 @@
 package br.salvador.thiago.parametrizacao.controller;
 
-import java.io.Serializable;
-import java.util.List;
 
+import br.salvador.thiago.parametrizacao.dto.CheckListPayLoadDTO;
+import br.salvador.thiago.parametrizacao.dto.CheckListPayLoadInsertDTO;
+import br.salvador.thiago.parametrizacao.model.CheckList;
+import br.salvador.thiago.parametrizacao.repositoy.CheckListRepository;
+import br.salvador.thiago.parametrizacao.service.CheckListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import br.salvador.thiago.parametrizacao.dto.CheckListDTO;
-import br.salvador.thiago.parametrizacao.dto.CheckListInsertDTO;
-import br.salvador.thiago.parametrizacao.service.CheckListService;
+import javax.validation.Valid;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/v1/parametros/checklist-documentos")
 public class CheckListController implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Autowired
-	private CheckListService service;
+    @Autowired
+    private CheckListService service;
 
-	@GetMapping
-	public ResponseEntity<List<CheckListDTO>> findAll() {
-		List<CheckListDTO> list = service.findAll();
-		return ResponseEntity.ok().body(list);
-	}
+    private CheckListRepository repository;
 
-	@PostMapping
-	public ResponseEntity<CheckListDTO> insert(@RequestBody CheckListInsertDTO dto) {
-		CheckListDTO newDTO = service.insert(dto);
-		return ResponseEntity.ok().body(newDTO);
-	}
+
+    @GetMapping
+    public ResponseEntity<List<CheckListPayLoadDTO>> findAll() {
+        List<CheckListPayLoadDTO> list = service.findAll();
+        return ResponseEntity.ok().body(list);
+
+    }
+
+
+    @PostMapping
+    public ResponseEntity<CheckListPayLoadDTO> insert(@RequestBody @Valid CheckListPayLoadInsertDTO dto) {
+        CheckListPayLoadDTO newDTO = service.insert(dto);
+        return ResponseEntity.ok().body(newDTO);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CheckListPayLoadDTO> pesquisarId(@PathVariable Long id) {
+        Optional<CheckList> list = repository.findById(id);
+        if (list.isPresent()) {
+            return ResponseEntity.ok(new CheckListPayLoadDTO(list.get()));
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 }
