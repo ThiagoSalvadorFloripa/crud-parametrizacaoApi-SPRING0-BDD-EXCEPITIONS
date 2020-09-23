@@ -45,12 +45,16 @@ public class ParametroProdutoEsteiraService {
     public ParametroProdutoEsteiraResponseDto update(
             Integer idParametroRegraEsteira,
             ParametroProdutoEsteiraPayloadDto objectDto) {
-        this.validaIdParametroRegraEsteira(idParametroRegraEsteira);
-        this.validaObjetoParametroProdutoEsteiraPayloadDto(objectDto);
+        validaUpdate(idParametroRegraEsteira, objectDto);
 
         return this.parametroProdutoEsteiraResponseMapper
                 .toParametroProdutoEsteiraResponseDto(this.parametroProdutoEsteiraRepository
                         .save(preparaParametroProdutoEsteiraParaAtualizar(idParametroRegraEsteira, objectDto)));
+    }
+
+    private void validaUpdate(Integer idParametroRegraEsteira, ParametroProdutoEsteiraPayloadDto objectDto) {
+        this.validaIdParametroRegraEsteira(idParametroRegraEsteira);
+        this.validaObjetoParametroProdutoEsteiraPayloadDto(objectDto);
     }
 
     public ParametroProdutoEsteiraResponseDto findById(Integer idParametroRegraEsteira) {
