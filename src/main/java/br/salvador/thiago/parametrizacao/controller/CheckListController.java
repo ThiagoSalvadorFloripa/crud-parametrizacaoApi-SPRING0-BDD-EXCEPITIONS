@@ -7,6 +7,7 @@ import br.salvador.thiago.parametrizacao.model.CheckList;
 import br.salvador.thiago.parametrizacao.repositoy.CheckListRepository;
 import br.salvador.thiago.parametrizacao.service.CheckListService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,30 +18,26 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/v1/parametros/checklist-documentos")
+@Profile("test")
 public class CheckListController implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Autowired
     private CheckListService service;
-
     private CheckListRepository repository;
-
 
     @GetMapping
     public ResponseEntity<List<CheckListPayLoadDTO>> findAll() {
         List<CheckListPayLoadDTO> list = service.findAll();
         return ResponseEntity.ok().body(list);
-
     }
-
 
     @PostMapping
     public ResponseEntity<CheckListPayLoadDTO> insert(@RequestBody @Valid CheckListPayLoadInsertDTO dto) {
         CheckListPayLoadDTO newDTO = service.insert(dto);
         return ResponseEntity.ok().body(newDTO);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<CheckListPayLoadDTO> pesquisarId(@PathVariable Long id) {
