@@ -37,9 +37,38 @@ public class ParametroProdutoEsteiraController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @RequestMapping(value = "/{idParametroRegraEsteira}", method = RequestMethod.GET)
-    public ResponseEntity<ParametroProdutoEsteiraResponseDto> findById(
-            @PathVariable Integer idParametroRegraEsteira) {
+    @RequestMapping(value = "/{idParametroRegraEsteira}", method = RequestMethod.PUT)
+    public ResponseEntity<ParametroProdutoEsteiraResponseDto> update(
+            @PathVariable Integer idParametroRegraEsteira,
+            @Valid @RequestBody ParametroProdutoEsteiraPayloadDto parametroProdutoEsteiraPayloadDto) {
+        this.logger.info("Request para atualizar o parametro de produto na esteira de id " + idParametroRegraEsteira +
+                ". " + parametroProdutoEsteiraPayloadDto.toString());
+
+        ParametroProdutoEsteiraResponseDto response =
+                this.parametroProdutoEsteiraService.update(idParametroRegraEsteira, parametroProdutoEsteiraPayloadDto);
+
+        this.logger.info("Serviço atualizou o parametro de produto na esteirade id " + idParametroRegraEsteira +
+                response.toString());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @RequestMapping(value = {"", "/{idParametroRegraEsteira}"}, method = RequestMethod.GET)
+    public ResponseEntity<?> find(
+            @PathVariable(required = false) Integer idParametroRegraEsteira) {
+
+        Object response;
+
+        if(idParametroRegraEsteira != null) {
+            response = serviceFindById(idParametroRegraEsteira);
+        } else {
+            response = serviceFindAll();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    private ParametroProdutoEsteiraResponseDto serviceFindById(Integer idParametroRegraEsteira) {
         this.logger.info("Request procurando o parametro de produto na esteira de id " + idParametroRegraEsteira);
 
         ParametroProdutoEsteiraResponseDto response =
@@ -47,19 +76,16 @@ public class ParametroProdutoEsteiraController {
 
         this.logger.info("Parametro de produto na esteira de id " + idParametroRegraEsteira +
                 " encontrado. " + response.toString());
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return response;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<ParametroProdutoEsteiraResponseDto>> findAll() {
+    private List<ParametroProdutoEsteiraResponseDto> serviceFindAll() {
         this.logger.info("Request procurando todos os parametros de produtos na esteira.");
 
         List<ParametroProdutoEsteiraResponseDto> response =
                 this.parametroProdutoEsteiraService.findAll();
 
         this.logger.info("Request procurando todos os parametros de produtos na esteira concluido.");
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return response;
     }
 }

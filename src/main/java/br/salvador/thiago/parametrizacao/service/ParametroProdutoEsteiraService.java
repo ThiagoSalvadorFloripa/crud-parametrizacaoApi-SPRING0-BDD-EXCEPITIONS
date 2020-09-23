@@ -1,6 +1,5 @@
 package br.salvador.thiago.parametrizacao.service;
 
-import br.salvador.thiago.parametrizacao.controller.ParametroProdutoEsteiraController;
 import br.salvador.thiago.parametrizacao.controller.exception.ObjectNotFoundException;
 import br.salvador.thiago.parametrizacao.dto.ParametroProdutoEsteiraPayloadDto;
 import br.salvador.thiago.parametrizacao.dto.ParametroProdutoEsteiraResponseDto;
@@ -16,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,60 +31,85 @@ public class ParametroProdutoEsteiraService {
     @Autowired
     private ParametroProdutoEsteiraResponseMapper parametroProdutoEsteiraResponseMapper;
 
-    private Logger logger = LoggerFactory.getLogger(ParametroProdutoEsteiraController.class);
+    private Logger logger = LoggerFactory.getLogger(ParametroProdutoEsteiraService.class);
 
     public ParametroProdutoEsteiraResponseDto save(ParametroProdutoEsteiraPayloadDto objectDto) {
-        this.logger.info("Iniciando validação de dados para salvar ParametroProdutoEsteira " +
-                objectDto.toString());
+        this.validaObjetoParametroProdutoEsteiraPayloadDto(objectDto);
+        this.preparaParametroProdutoEsteiraParaSalvar(objectDto);
 
+        return this.parametroProdutoEsteiraResponseMapper
+                .toParametroProdutoEsteiraResponseDto(this.parametroProdutoEsteiraRepository
+                        .save(preparaParametroProdutoEsteiraParaSalvar(objectDto)));
+    }
+
+    public ParametroProdutoEsteiraResponseDto update(
+            Integer idParametroRegraEsteira,
+            ParametroProdutoEsteiraPayloadDto objectDto) {
+        validaUpdate(idParametroRegraEsteira, objectDto);
+
+        return this.parametroProdutoEsteiraResponseMapper
+                .toParametroProdutoEsteiraResponseDto(this.parametroProdutoEsteiraRepository
+                        .save(preparaParametroProdutoEsteiraParaAtualizar(idParametroRegraEsteira, objectDto)));
+    }
+
+    private void validaUpdate(Integer idParametroRegraEsteira, ParametroProdutoEsteiraPayloadDto objectDto) {
+        this.validaIdParametroRegraEsteira(idParametroRegraEsteira);
+        this.validaObjetoParametroProdutoEsteiraPayloadDto(objectDto);
+    }
+
+    public ParametroProdutoEsteiraResponseDto findById(Integer idParametroRegraEsteira) {
+        validaIdParametroRegraEsteira(idParametroRegraEsteira);
+
+        ParametroProdutoEsteira responseEntity = this.parametroProdutoEsteiraRepository
+                .findById(idParametroRegraEsteira)
+                .orElseThrow(() ->
+                        new ObjectNotFoundException(idParametroRegraEsteira, "Parametro de Produto Esteira")
+                );
+
+         return this.parametroProdutoEsteiraResponseMapper.toParametroProdutoEsteiraResponseDto(responseEntity);
+    }
+
+    public List<ParametroProdutoEsteiraResponseDto> findAll() {
+        return this.parametroProdutoEsteiraResponseMapper
+                .toParametroProdutoEsteiraResponseDtos(this.parametroProdutoEsteiraRepository.findAll());
+    }
+
+    private void validaObjetoParametroProdutoEsteiraPayloadDto(ParametroProdutoEsteiraPayloadDto objectDto) {
+        this.logger.info("Validando objeto ParametroProdutoEsteira {}", objectDto);
         ObjectValidation validation = new ParametroProdutoEsteiraPayloadValidation(objectDto);
         validation.execute();
+        this.logger.info("Validação de objeto ParametroProdutoEsteira concluída {}", objectDto);
+    }
 
-        this.logger.info("Validação de dados para salvar ParametroProdutoEsteira concluída" +
-                objectDto.toString());
+    private void validaIdParametroRegraEsteira(Integer idParametroRegraEsteira) {
+        this.logger.info("Validando dados para encontrar ParametroProdutoEsteira de id " + idParametroRegraEsteira);
 
+        Rule isNull = new IsNullOrExceptRule(idParametroRegraEsteira);
+        isNull.doLogic("iidParametroRegraEsteira");
+
+        this.logger.info("Validação de dados para encontrar ParametroProdutoEsteira de id " + idParametroRegraEsteira + " concluída");
+    }
+
+    private ParametroProdutoEsteira preparaParametroProdutoEsteiraParaSalvar(ParametroProdutoEsteiraPayloadDto objectDto){
         ParametroProdutoEsteira objectToSave = this.parametroProdutoEsteiraPayloadMapper
                 .toParametroProdutoEsteira(objectDto);
 
         objectToSave.setIdParametroRegraEsteira(null);
         objectToSave.setDataCriacao(LocalDateTime.now());
 
-        ParametroProdutoEsteira responseEntity = this.parametroProdutoEsteiraRepository
-                .save(objectToSave);
-
-        ParametroProdutoEsteiraResponseDto responseDto = this.parametroProdutoEsteiraResponseMapper
-                .toParametroProdutoEsteiraResponseDto(responseEntity);
-
-        return responseDto;
+        return objectToSave;
     }
 
-    public ParametroProdutoEsteiraResponseDto findById(Integer idParametroRegraEsteira) {
-        this.logger.info("Iniciando validação de dados para encontrar ParametroProdutoEsteira de id " +
-                idParametroRegraEsteira);
+    private ParametroProdutoEsteira preparaParametroProdutoEsteiraParaAtualizar(
+            Integer idParametroProdutoEsteira,
+            ParametroProdutoEsteiraPayloadDto objectDto){
+        ParametroProdutoEsteira objectToSave = this.parametroProdutoEsteiraPayloadMapper
+                .toParametroProdutoEsteira(objectDto);
+        
+        objectToSave.setIdParametroRegraEsteira(idParametroProdutoEsteira);
+        objectToSave.setDataAtualizacao(LocalDateTime.now());
+        objectToSave.setDataCriacao(this.findById(idParametroProdutoEsteira).getDataCriacao());
 
-        Rule isNull = new IsNullOrExceptRule(idParametroRegraEsteira);
-        isNull.doLogic("iidParametroRegraEsteira");
-
-        this.logger.info("Validação de dados para encontrar ParametroProdutoEsteira de id " +
-                idParametroRegraEsteira + " concluída");
-
-        ParametroProdutoEsteira responseEntity = this.parametroProdutoEsteiraRepository
-                .findById(idParametroRegraEsteira)
-                .orElseThrow(() -> new ObjectNotFoundException(idParametroRegraEsteira, "Parametro de Produto Esteira"));
-
-        ParametroProdutoEsteiraResponseDto responseDto = this.parametroProdutoEsteiraResponseMapper
-                .toParametroProdutoEsteiraResponseDto(responseEntity);
-
-         return responseDto;
-    }
-
-    public List<ParametroProdutoEsteiraResponseDto> findAll() {
-        List<ParametroProdutoEsteira> responseEntityList =
-                this.parametroProdutoEsteiraRepository.findAll();
-        List<ParametroProdutoEsteiraResponseDto> responseDtoList =
-                this.parametroProdutoEsteiraResponseMapper
-                        .toParametroProdutoEsteiraResponseDtos(responseEntityList);
-
-        return responseDtoList;
+        return objectToSave;
     }
 }
