@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,21 +20,21 @@ import lombok.Setter;
 public class CheckListPayLoadInsertDTO {
 
 	private Long id;
-	@NotNull
+	@NotNull @NotBlank
 	private String produto;
-	@NotNull
+	@NotNull @NotBlank
 	private String nome_documento;
-	@NotNull
+	@NotNull @NotBlank
 	private String etapa_jornada_venda;
-	@NotNull
+	@NotNull @NotBlank
 	private Boolean obrigatoriedade;
-	@NotNull
+	@NotNull @NotBlank
 	private Instant data_urgencia;
-	@NotNull
+	@NotNull @NotBlank
 	private Instant data_criacao;
-	@NotNull
+	@NotNull @NotBlank
 	private String usuario;
-	@NotNull
+	@NotNull @NotBlank
 	private Boolean habilitado;
 
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class CheckListDeleteController implements Serializable {
     private CheckListRepository repository;
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<CheckListPayLoadDTO> deleteId(@PathVariable Long id) {
+    public ResponseEntity<CheckListPayLoadDTO> deleteId(@PathVariable @Valid Long id) {
         Optional<CheckList> list = repository.findById(id);
         if (list.isPresent()) {
             return ResponseEntity.ok(new CheckListPayLoadDTO(list.get()));

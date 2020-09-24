@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public class CheckListPutController implements Serializable {
     private CheckListRepository repository;
 
     @PutMapping("/{id}")
-    public ResponseEntity<CheckListPayLoadDTO> putId(@PathVariable Long id) {
+    public ResponseEntity<CheckListPayLoadDTO> putId(@PathVariable @Valid Long id) {
         Optional<CheckList> list = repository.findById(id);
         if (list.isPresent()) {
             return ResponseEntity.ok(new CheckListPayLoadDTO(list.get()));
