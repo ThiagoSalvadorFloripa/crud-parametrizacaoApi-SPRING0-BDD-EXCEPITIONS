@@ -17,7 +17,7 @@ import java.net.URI;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+//@ActiveProfiles("test")
 public class CheckListControllerTest {
 
     @Autowired

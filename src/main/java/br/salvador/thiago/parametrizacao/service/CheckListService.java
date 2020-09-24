@@ -4,6 +4,7 @@ import br.salvador.thiago.parametrizacao.dto.CheckListPayLoadDTO;
 import br.salvador.thiago.parametrizacao.dto.CheckListPayLoadInsertDTO;
 import br.salvador.thiago.parametrizacao.model.CheckList;
 import br.salvador.thiago.parametrizacao.repositoy.CheckListRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
