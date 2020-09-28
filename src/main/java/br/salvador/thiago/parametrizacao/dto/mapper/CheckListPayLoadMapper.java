@@ -9,7 +9,13 @@ import org.mapstruct.Mapper;
 public interface CheckListPayLoadMapper {
     CheckList toCheckList(CheckListPayLoadDTO list);
 
+    /*
+    TODO:
+    Adicionar esses caras para fazer o mapeamento automatico
+
     CheckList toEntity(CheckListPayLoadDTO dto);
     CheckListPayLoadDTO toDto(CheckList obj);
+     */
+
 
 }
