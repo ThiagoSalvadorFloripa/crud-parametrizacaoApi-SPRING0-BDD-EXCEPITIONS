@@ -47,6 +47,7 @@ public class CheckListService implements Serializable {
     }
 
     private void updateData(CheckList newObj, CheckList obj) {
+        // primeiro validar se os objetos não são nulos
         newObj.setProduto(obj.getProduto());
         newObj.setNome_documento(obj.getNome_documento());
         newObj.setEtapa_jornada_venda(obj.getEtapa_jornada_venda());
@@ -56,7 +57,7 @@ public class CheckListService implements Serializable {
         newObj.setUsuario(obj.getUsuario());
         newObj.setHabilitado(obj.getHabilitado());
     }
-
+    // apagar esse metodo
     public CheckList fromDTO(CheckListPayLoadDTO objDto) {
         return new CheckList(objDto.getId(), objDto.getProduto(), objDto.getNome_documento(),
                 objDto.getObrigatoriedade(), objDto.getData_vigencia(), objDto.getData_criacao(), objDto.getUsuario(), objDto.getHabilitado());

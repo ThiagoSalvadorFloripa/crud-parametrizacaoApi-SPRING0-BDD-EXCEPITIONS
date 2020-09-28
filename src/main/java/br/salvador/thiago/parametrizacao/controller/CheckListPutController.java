@@ -1,6 +1,7 @@
 package br.salvador.thiago.parametrizacao.controller;
 
 import br.salvador.thiago.parametrizacao.dto.CheckListPayLoadDTO;
+import br.salvador.thiago.parametrizacao.dto.mapper.CheckListPayLoadMapper;
 import br.salvador.thiago.parametrizacao.model.CheckList;
 import br.salvador.thiago.parametrizacao.service.CheckListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,17 @@ public class CheckListPutController implements Serializable {
     @Autowired
     private CheckListService service;
 
+     /*
+    TODO: colocar o mapper para vc coverter
+    @Autowired
+    private CheckListPayLoadMapper mapper;
+     */
+
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<Void> update(@RequestBody CheckListPayLoadDTO objDto, @PathVariable Long id) {
-        CheckList obj = service.fromDTO(objDto);
+        CheckList obj = service.fromDTO(objDto); // mudar para CheckList resutDto = mapper.toDto(service.update(mapper.toEntity(objDto)));
         obj.setId(id);
         obj = service.update(obj);
         return ResponseEntity.noContent().build();
     }
-
 }

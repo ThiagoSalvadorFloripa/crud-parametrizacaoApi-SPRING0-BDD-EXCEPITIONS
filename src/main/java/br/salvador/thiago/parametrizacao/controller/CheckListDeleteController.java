@@ -21,6 +21,7 @@ public class CheckListDeleteController implements Serializable {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        // colocar uma exeção se o id < 1
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
