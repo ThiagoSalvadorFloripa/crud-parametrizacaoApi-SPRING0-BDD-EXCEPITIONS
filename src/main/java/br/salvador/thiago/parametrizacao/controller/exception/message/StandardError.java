@@ -14,4 +14,7 @@ public class StandardError {
     private String message;
     private String exception;
     private LocalDateTime dateTime;
+
+    public StandardError(long currentTimeMillis, int value, String não_encontrado, String message, String requestURI) {
+    }
 }

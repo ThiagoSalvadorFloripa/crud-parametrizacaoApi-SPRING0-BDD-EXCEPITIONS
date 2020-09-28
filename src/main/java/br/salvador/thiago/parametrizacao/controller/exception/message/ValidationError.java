@@ -16,6 +16,7 @@ public class ValidationError extends StandardError {
     private List<Field> fields = new ArrayList<>();
 
     public void addField(Field field) {
+
         this.fields.add(field);
     }
 }
